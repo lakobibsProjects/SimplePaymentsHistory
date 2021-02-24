@@ -29,6 +29,7 @@ class AuthRequestService: AuthObservable{
             "login": "\(login)",
             "password": "\(password)"
         ]
+        
         thread.async {
             let request = AF.request(self.defaultURL,
                                      method: .post,
@@ -51,6 +52,7 @@ class AuthRequestService: AuthObservable{
             let soccessString = "success"
             request.responseJSON(completionHandler: { response in
                 let description = response.description.suffix(from: response.description.firstIndex(of: "{")!)
+                //extract token
                 if let lb  = description.range(of: tokenString)?.lowerBound {
                     let suffix = description.suffix(from: lb)
                     let prefix = suffix.prefix(upTo: suffix.firstIndex(of: ";")!)
@@ -59,7 +61,7 @@ class AuthRequestService: AuthObservable{
                     //TODO: Save token to UserDefaults
                     token = String(result)
                 }
-                
+                //extract success
                 if let lb  = description.range(of: soccessString)?.lowerBound {
                     let suffix = description.suffix(from: lb)
                     let prefix = suffix.prefix(upTo: suffix.firstIndex(of: ";")!)

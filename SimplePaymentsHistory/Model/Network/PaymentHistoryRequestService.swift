@@ -56,8 +56,11 @@ class PaymentHistoryRequestService: PaymentHistoryRequestObservable{
                 //3.2 response to array of payment records
                 var end = false
                 while !end{
+                    //response has next item
                     if let lastIndex = arrayString.firstIndex(of: ","){
+                        //create thumb payment record
                         var payment = PaymentRecord(amount: 0.0, created: 0, currency: nil, desc: "")
+                        //extract amount
                         if let lb  = arrayString.range(of: amountString)?.lowerBound {
                             let suffix = arrayString.suffix(from: lb)
                             let prefix = suffix.prefix(upTo: suffix.firstIndex(of: ";")!)
@@ -74,7 +77,7 @@ class PaymentHistoryRequestService: PaymentHistoryRequestObservable{
                                 payment.amount = amount
                             }
                         }
-                        
+                        //extract cration date
                         if let lb  = arrayString.range(of: createdString)?.lowerBound {
                             let suffix = arrayString.suffix(from: lb)
                             let prefix = suffix.prefix(upTo: suffix.firstIndex(of: ";")!)
@@ -86,7 +89,7 @@ class PaymentHistoryRequestService: PaymentHistoryRequestObservable{
                                 payment.created = created
                             }
                         }
-                        
+                        //extract currency
                         if let lb  = arrayString.range(of: currencyString)?.lowerBound {
                             if lb < lastIndex{
                                 let suffix = arrayString.suffix(from: lb)
@@ -98,7 +101,7 @@ class PaymentHistoryRequestService: PaymentHistoryRequestObservable{
                                 payment.currency = currency
                             }                            
                         }
-                        
+                        //extract description
                         if let lb  = arrayString.range(of: descString)?.lowerBound {
                             let suffix = arrayString.suffix(from: lb)
                             let prefix = suffix.prefix(upTo: suffix.firstIndex(of: ";")!)
@@ -108,9 +111,10 @@ class PaymentHistoryRequestService: PaymentHistoryRequestObservable{
                             let desc = String(result)
                             payment.desc = desc
                         }
-                        
+                        //remove record from response string
                         arrayString = arrayString.suffix(from: lastIndex)
                         arrayString = arrayString.dropFirst()
+                        //add record to result array
                         result.append(payment)
                     } else{
                         end = true
