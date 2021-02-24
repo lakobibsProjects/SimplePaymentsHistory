@@ -48,8 +48,10 @@ class AuthRequestService: AuthObservable{
             
             var token: String? = nil
             var success: String? = nil
+            var error: String? = nil
             let tokenString = "token"
             let soccessString = "success"
+            let errorMsgString = "error_msg"
             request.responseJSON(completionHandler: { response in
                 let description = response.description.suffix(from: response.description.firstIndex(of: "{")!)
                 //extract token
@@ -70,13 +72,23 @@ class AuthRequestService: AuthObservable{
                     success = String(result)
                 }
                 
+                //extract error message
+                if let lb  = description.range(of: errorMsgString)?.lowerBound {
+                    let suffix = description.suffix(from: lb)
+                    let prefix = suffix.prefix(upTo: suffix.firstIndex(of: ";")!)
+                    var result = (prefix.suffix(from: prefix.firstIndex(of: "=")!))
+                    result = result.dropFirst(3)
+                    result = result.dropLast(1)
+                    error = String(result)
+                }
+                
                 if success! == "true"{
                     DispatchQueue.main.async {
                         self.notify(authResult: true, token: token, error: nil)
                     }                    
                 } else{
                     DispatchQueue.main.async {
-                        self.notify(authResult: false, token: nil, error: "User authorization failed")
+                        self.notify(authResult: false, token: nil, error: error ?? "User authorization failed")
                     }
                 }
             })
