@@ -26,8 +26,8 @@ class AuthRequestService: AuthObservable{
     /// - parameter password: imput password
     func authRequest(login: String, password: String){
         let parameters = [
-            "login": "login",
-            "password": "password"
+            "login": "\(login)",
+            "password": "\(password)"
         ]
         thread.async {
             let request = AF.request(self.defaultURL,
@@ -38,7 +38,8 @@ class AuthRequestService: AuthObservable{
                 .responseJSON { response in
                     switch response.result {
                     case .success:
-                        break
+                       // break
+                        print(response.description)
                     case .failure(let error):
                         self.notify(authResult: false, token: nil, error: error.localizedDescription)
                     }
@@ -73,7 +74,7 @@ class AuthRequestService: AuthObservable{
                     }                    
                 } else{
                     DispatchQueue.main.async {
-                        self.notify(authResult: false, token: nil, error: "Autorization failed")
+                        self.notify(authResult: false, token: nil, error: "User authorization failed")
                     }
                 }
             })
